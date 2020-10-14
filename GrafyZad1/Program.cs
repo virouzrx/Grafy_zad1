@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Grafy
+namespace GrafyZad1
 {
     class Program
     {
@@ -12,13 +12,12 @@ namespace Grafy
         public static Regex edgeRegex = new Regex("^[0-9]*\x20->\x20[0-9]*;$");
         static readonly string textFile = @"C:\Users\ASUS\Desktop\graph.dt"; //ścieżka do pliku 
         //public string[] stringSeparators = new string[] { " -> " };
-        static void Main(string[] args)
+        static void Main()
         {
             var graph = new Dictionary<int, List<int>>();
             if (File.Exists(textFile))
             {
                 string[] lines = File.ReadAllLines(textFile);
-
                 foreach (var line in lines)
                 {
                     if (nodeRegex.IsMatch(line.ToString()))
@@ -44,79 +43,76 @@ namespace Grafy
             {
                 Console.WriteLine("Nie znaleziono pliku. Upewnij się, że podałeś właściwą ściężkę do pliku");
             }
-            
-            List<int> resultBuffer = new List<int>();
-            //usuwanie punktów które nie mogą być w zbiorze U ponieważ mają tylko wyjścia (warunek z krawędzią (v,u))
-            for (int j = 0; j < graph.Count; j++)
+            List<int> wynik = new List<int>();
+            foreach (var item in graph)
             {
-                for (int i = 0; i < graph.Count; i++)
+                foreach (var item2 in graph)
                 {
-                    if (graph[i].Contains(j) && resultBuffer.Contains(j) == false)
+                    if (item2.Value.Contains(item.Key) && wynik.Contains(item.Key) == false)
                     {
-                        resultBuffer.Add(j);
+                        wynik.Add(item.Key);
                     }
                 }
             }
-            //wstępne usuwanie par 
-            List<int> removedBuffer = new List<int>();//kolekcja przetrzymująca wierzchołki które początkowo były w rozwiązaniu ale później zostały usuniętę
-
-            for (int i = 0; i < graph.Count; i++)
+            List<int> temp = new List<int>();
+            foreach (var item in graph)
             {
-                if (resultBuffer.Contains(i))
+                if (wynik.Contains(item.Key))
                 {
-                    for (int j = 0; j < resultBuffer.Count; j++)
+                    for (int i = 0; i < wynik.Count(); i++)
                     {
-                        if (graph[i].Contains(resultBuffer[j]))
+                        if (graph[item.Key].Contains(wynik[i]))
                         {
-                            resultBuffer.Remove(i);
-                            removedBuffer.Add(i);//usunięte wierzchołki zapisujemy ponieważ nie wiemy czy nie usuneliśmy przez przypadek prawidłowego wierzchołka 
+                            wynik.Remove(item.Key);
+                            temp.Add(item.Key);
                         }
                     }
                 }
             }
 
-            //przywracanie wierzchołków które zostały błędnie usunięte przy usuwaniu par
-            for (int i = 0; i < removedBuffer.Count; i++)
+            for (int i = 0; i < wynik.Count; i++)
             {
                 for (int j = 0; j < graph.Count; j++)
                 {
-                    if (removedBuffer[i] == j)
+                    if (temp[i] == j)
                     {
-                        for (int x = 0; x < graph[j].Count; x++)
+                        for (int k = 0; k < graph[j].Count; k++)
                         {
-                            if (!resultBuffer.Contains(graph[j][x]))
-                                resultBuffer.Add(removedBuffer[i]);
+                            if (wynik.Contains(graph[j][k]) == false)
+                            {
+                                wynik.Add(temp[i]);
+                            }
                         }
                     }
                 }
             }
-            //szukanie wierzchołków wiszących (tych które nie mają krawędzi)
-            int counter;//licznik sprawdzający ilość połączeń wierzchoiłka z innymi wierzchołkami
-            for (int i = 0; i < graph.Count; i++)
+
+            foreach (var item in graph)
             {
-                counter = 0;
+                var warunek = true; 
                 for (int j = 0; j < graph.Count; j++)
                 {
-
                     for (int x = 0; x < graph[j].Count; x++)
                     {
-                        if (graph[j][x] == i)
+                        if (graph[j][x] == item.Key)
                         {
-                            counter++;
+                            warunek = true;
+                        }
+                        else
+                        {
+                            warunek = false;
                         }
                     }
                 }
-                if (counter == 0 && graph[i].Count == 0)
+                if (warunek == false && graph[item.Key].Count == 0)
                 {
-                    resultBuffer.Add(i);
+                    wynik.Add(item.Key);
                 }
             }
-            //wyśwetlenie
-          foreach (var element in resultBuffer)
-            {
-                Console.Write(element);
+            foreach (var item in wynik)
+                {
+                    Console.Write(item + " ");
+                }
             }
         }
-
     }
-}

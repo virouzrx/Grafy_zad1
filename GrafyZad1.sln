@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrafyZad1", "GrafyZad1\GrafyZad1.csproj", "{E7E1328B-941E-4001-8EFB-D308F9A20AE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrafyZad1", "GrafyZad1\GrafyZad1.csproj", "{E7E1328B-941E-4001-8EFB-D308F9A20AE0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{17654C47-165D-43BD-BDB1-6D663E583C6A}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
