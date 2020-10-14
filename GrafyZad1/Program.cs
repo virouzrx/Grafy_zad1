@@ -6,48 +6,54 @@ using System.Text.RegularExpressions;
 
 namespace Grafy
 {
-    //Andrzej Boba
     class Program
     {
         public static Regex nodeRegex = new Regex("^[0-9]*;$");
         public static Regex edgeRegex = new Regex("^[0-9]*\x20->\x20[0-9]*;$");
-        static Dictionary<int, List<int>> ReadFromFile(string path)//odczytanie danych z pliku
-        {
-            var lines = File.ReadAllLines(path);
-            Dictionary<int, List<int>> graph = new Dictionary<int, List<int>>();
-            foreach (var line in lines)
-            {
-                if (nodeRegex.IsMatch(line.ToString()))
-                {
-                    graph.Add(int.Parse(line.Remove(1)), new List<int>());
-                }
-                else if (edgeRegex.IsMatch(line.ToString()))
-                {
-                    var numbers = line.Split(new string[] { " -> " }, StringSplitOptions.RemoveEmptyEntries);
-                    numbers[1] = numbers[1].Remove(1);
-                    graph[int.Parse(numbers[0])].Add(int.Parse(numbers[1]));
-                }
-                else
-                {
-                    continue;
-                }
-            }
-            return graph;
-        }
+        static readonly string textFile = @"C:\Users\ASUS\Desktop\graph.dt"; //ścieżka do pliku 
+        //public string[] stringSeparators = new string[] { " -> " };
         static void Main(string[] args)
         {
-            Dictionary<int, List<int>> graph = ReadFromFile(args[0]);
-            //Dane są zapisane w postaci kolekcji kluczy i wartości, gdzie klucz to numer wierchołka a wartość to lista wierzchołków do których ten wierzchołek "wchodzi"
-            List<int> resultBuffer = new List<int>();//kolekcja przetrzymująca wynik
+            var graph = new Dictionary<int, List<int>>();
+            if (File.Exists(textFile))
+            {
+                string[] lines = File.ReadAllLines(textFile);
+
+                foreach (var line in lines)
+                {
+                    if (nodeRegex.IsMatch(line.ToString()))
+                    {
+                        graph.Add(int.Parse(line.Remove(1)), new List<int>());
+                    }
+                    else if (edgeRegex.IsMatch(line.ToString()))
+                    {
+                        //var numbers = line.Split(stringSeparator, StringSplitOptions.RemoveEmptyEntries)
+                        var numbers = line.Split(" -> ");
+                        numbers[1] = numbers[1].Remove(1);
+                        _ = Int32.TryParse(numbers[0], out int vertice);
+                        _ = Int32.TryParse(numbers[1], out int edges);
+                        graph[vertice].Add(edges);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nie znaleziono pliku. Upewnij się, że podałeś właściwą ściężkę do pliku");
+            }
+            
+            List<int> resultBuffer = new List<int>();
             //usuwanie punktów które nie mogą być w zbiorze U ponieważ mają tylko wyjścia (warunek z krawędzią (v,u))
             for (int j = 0; j < graph.Count; j++)
             {
                 for (int i = 0; i < graph.Count; i++)
                 {
-                    if (graph[i].Contains(j) && !resultBuffer.Contains(j))
+                    if (graph[i].Contains(j) && resultBuffer.Contains(j) == false)
                     {
                         resultBuffer.Add(j);
-                        //break;
                     }
                 }
             }
@@ -64,7 +70,6 @@ namespace Grafy
                         {
                             resultBuffer.Remove(i);
                             removedBuffer.Add(i);//usunięte wierzchołki zapisujemy ponieważ nie wiemy czy nie usuneliśmy przez przypadek prawidłowego wierzchołka 
-                            //break;
                         }
                     }
                 }
@@ -107,9 +112,9 @@ namespace Grafy
                 }
             }
             //wyśwetlenie
-            for (int i = 0; i < resultBuffer.Count; i++)
+          foreach (var element in resultBuffer)
             {
-                Console.Write($"{resultBuffer[i]} ");
+                Console.Write(element);
             }
         }
 
