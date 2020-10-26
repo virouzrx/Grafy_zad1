@@ -16,18 +16,19 @@ namespace GrafyZad1
         public static Stopwatch stopwatch = new Stopwatch();
         public static Regex nodeRegex = new Regex("^[0-9]*;$");
         public static Regex edgeRegex = new Regex("^[0-9]*\x20->\x20[0-9]*;$");
-        static readonly string textFile = @"C:\Users\ASUS\Desktop\graph.dt";
         public static List<int> wynik = new List<int>();
         public static List<int> temp = new List<int>();
+        public static List<int> floatingNodes = new List<int>();
+        public static Dictionary<int, List<int>> removedNodes = new Dictionary<int, List<int>>();
 
-        public static void ParseGrafu()
+        public static void ParseGrafu(string source)
         {
             List<int> wynik = new List<int>();
             List<int> temp = new List<int>();
             var tmp = GrafParsed.graf;
-            if (File.Exists(textFile))
+            if (File.Exists(source))
             {
-                string[] tekst = File.ReadAllLines(textFile);
+                string[] tekst = File.ReadAllLines(source);
                 foreach (var item in tekst)
                 {
                     if (nodeRegex.IsMatch(item.ToString()))
@@ -53,98 +54,75 @@ namespace GrafyZad1
                 Console.WriteLine("Nie znaleziono pliku. Upewnij się, że podałeś właściwą ściężkę do pliku");
             }
         }
-        public static void Dodawanie1()
+        public static void Main(string[] args)
         {
-            foreach (var item in GrafParsed.graf)
+            stopwatch.Start();
+            ParseGrafu(args[0]);
+
+            foreach (var item in GrafParsed.graf) //szukaj elementow wiszacych
             {
-                foreach (var item2 in GrafParsed.graf)
+                if (!item.Value.Any())//jesli element nie ma zadnych wyjsc, sprawdz czy ktorykolwiek element ma do niego wejscia
                 {
-                    if (item2.Value.Contains(item.Key) && wynik.Contains(item.Key) == false)
+                    var tmp = item.Key; //wierzcholek ktory nie ma wyjsc
+                    var condition = true;
+                    foreach (var item2 in GrafParsed.graf)
                     {
-                        wynik.Add(item.Key);
+                        if (item2.Value.Contains(tmp)) //sprawdzanie, czy wierzcholek ma wejscia
+                        {
+                            condition = false;
+                        }
+                    }
+                    if (condition)
+                    {
+                        floatingNodes.Add(tmp);
+                        GrafParsed.graf.Remove(tmp);
                     }
                 }
             }
-        }
-        public static void Dodawanie2()
-        {
-            for (int i = 0; i < wynik.Count; i++)
+            foreach (var item in GrafParsed.graf.Keys)
             {
-                for (int j = 0; j < GrafParsed.graf.Count; j++)
+                Console.WriteLine(item);
+            }
+            //pierwszy element 
+            try
+            {
+                for (int i = 0; i < GrafParsed.graf.Count; i++)
                 {
-                    if (temp[i] == j)
+                    if (!temp.Any())
                     {
-                        for (int k = 0; k < GrafParsed.graf[j].Count; k++)
+                        var key = GrafParsed.graf.ElementAt(i).Key;
+                        temp.Add(key);
+                    }
+                    else
+                    {
+
+                        for (int j = 0; j < temp.Count; j++)
                         {
-                            if (wynik.Contains(GrafParsed.graf[j][k]) == false)
+                            if (!GrafParsed.graf[j].Contains(i))
                             {
-                                wynik.Add(temp[i]);
+                                if (!GrafParsed.graf[i].Contains(j))
+                                {
+                                    if (!temp.Contains(i))
+                                    {
+                                        var key = GrafParsed.graf.ElementAt(i).Key;
+                                        temp.Add(key);
+                                    }
+                                }
+
                             }
                         }
                     }
                 }
             }
-        }
-        public static void Usuwanie()
-        {
-            foreach (var item in GrafParsed.graf)
+            catch (System.Collections.Generic.KeyNotFoundException)
             {
-                if (wynik.Contains(item.Key))
-                {
-                    for (int i = 0; i < wynik.Count(); i++)
-                    {
-                        if (GrafParsed.graf[item.Key].Contains(wynik[i]))
-                        {
-                            wynik.Remove(item.Key);
-                            temp.Add(item.Key);
-                        }
-                    }
-                }
             }
-        }
-
-        public static void Szukanie()
-        {
-            foreach (var item in GrafParsed.graf)
+            foreach (var item in temp)
             {
-                var warunek = true;
-                for (int j = 0; j < GrafParsed.graf.Count; j++)
-                {
-                    for (int x = 0; x < GrafParsed.graf[j].Count; x++)
-                    {
-                        if (GrafParsed.graf[j][x] == item.Key)
-                        {
-                            warunek = true;
-                        }
-                        else
-                        {
-                            warunek = false;
-                        }
-                    }
-                }
-                if (warunek == false && GrafParsed.graf[item.Key].Count == 0)
-                {
-                    wynik.Add(item.Key);
-                }
+                Console.WriteLine(item);
             }
-        }
-        public static void Main()
-        {
-            stopwatch.Start();
-            ParseGrafu();
-            Dodawanie1();
-            Usuwanie();
-            Dodawanie2();
-            Szukanie();
-            stopwatch.Stop();
-
-            foreach (var item in wynik)
-            {
-                Console.Write(item + " ");
-            }
-            TimeSpan ts = stopwatch.Elapsed;
-            string elapsedTime = String.Format("{0:00},{1:00}", ts.Seconds, ts.Milliseconds);
-            Console.WriteLine("\nczas (w sekundach): " + elapsedTime);
         }
     }
 }
+
+

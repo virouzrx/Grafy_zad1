@@ -9,3 +9,5 @@ C:\Users\ASUS\source\repos\GrafyZad1\GrafyZad1\obj\Debug\netcoreapp3.1\GrafyZad1
 C:\Users\ASUS\source\repos\GrafyZad1\GrafyZad1\obj\Debug\netcoreapp3.1\GrafyZad1.AssemblyInfo.cs
 C:\Users\ASUS\source\repos\GrafyZad1\GrafyZad1\obj\Debug\netcoreapp3.1\GrafyZad1.dll
 C:\Users\ASUS\source\repos\GrafyZad1\GrafyZad1\obj\Debug\netcoreapp3.1\GrafyZad1.pdb
+C:\Users\ASUS\source\repos\GrafyZad1\GrafyZad1\obj\Debug\netcoreapp3.1\GrafyZad1.csproj.CoreCompileInputs.cache
+C:\Users\ASUS\source\repos\GrafyZad1\GrafyZad1\obj\Debug\netcoreapp3.1\GrafyZad1.genruntimeconfig.cache
